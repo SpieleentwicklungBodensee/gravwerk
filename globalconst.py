@@ -40,5 +40,4 @@ KEYS_THRUST = [pygame.K_w, pygame.K_UP]
 KEYS_ROTATE_LEFT = [pygame.K_a, pygame.K_LEFT]
 KEYS_ROTATE_RIGHT = [pygame.K_d, pygame.K_RIGHT]
 
-ROTATION_CHANGE = 0.5
-MAX_ROTATION_SPEED = 10
+ROTATION_CHANGE = 5

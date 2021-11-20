@@ -10,10 +10,5 @@ class PlayerObject(GameObject):
         self.x += self.xdir * self.speed
         self.y += self.ydir * self.speed
 
-        self.rotationSpeed += self.rotationDir * ROTATION_CHANGE
-        if self.rotationSpeed > MAX_ROTATION_SPEED:
-            self.rotationSpeed = MAX_ROTATION_SPEED
-        elif self.rotationSpeed < -MAX_ROTATION_SPEED:
-            self.rotationSpeed = -MAX_ROTATION_SPEED
-        self.rotation = math.fmod(self.rotation + self.rotationSpeed, 360)
+        self.rotation = math.fmod(self.rotation + self.rotationDir * ROTATION_CHANGE, 360)
 
