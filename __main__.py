@@ -121,10 +121,19 @@ def render_object(obj,position):
     if not tileId in tiles:
         return
     tile = tiles[tileId]
+
+    # no filtering
     #rotated_sprite = pygame.transform.rotate(tile, obj.rotation)
     #rotated_sprite = pygame.transform.scale(rotated_sprite, (round(rotated_sprite.get_size()[0] / 16), round(rotated_sprite.get_size()[1] / 16)))
 
-    rotated_sprite = pygame.transform.rotozoom(tile, obj.rotation, 1.0/16.0)
+    # instant filtering
+    #rotated_sprite = pygame.transform.rotozoom(tile, obj.rotation, 1.0/16.0)
+
+    # multi-step filtering
+    rotated_sprite = pygame.transform.rotozoom(tile, obj.rotation, 0.5)
+    rotated_sprite = pygame.transform.rotozoom(rotated_sprite, 0, 0.5)
+    rotated_sprite = pygame.transform.rotozoom(rotated_sprite, 0, 0.5)
+    rotated_sprite = pygame.transform.rotozoom(rotated_sprite, 0, 0.5)
 
     rotated_rect = rotated_sprite.get_rect(center=(position[0], position[1]))
     screen.blit(rotated_sprite, rotated_rect)
@@ -225,7 +234,7 @@ def render():
         font.drawText(screen, 'GRAVWERK', 2, 2, fgcolor=(255,255,255))#, bgcolor=(0,0,0))
 
     #get own position
-    camera_pos = (0,0)
+    camera_pos = None
     for obj_id ,obj in gamestate.objects.items():
         if obj_id == ownId:
             camera_pos = (obj.x - SCR_W/2 + TILE_W/2, obj.y - SCR_H/2 + TILE_H/2)
