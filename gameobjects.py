@@ -18,6 +18,8 @@ class GameObject(object):
 
         self.speed = 1
 
+        self.v = [0.0, 0.0]
+
         self.width = TILE_W
         self.height = TILE_H
 
