@@ -124,6 +124,8 @@ def removePlayer(objId):
     del gamestate.objects[objId]
 
 def controls():
+    ownPlayer = gamestate.objects[ownId]
+
     for e in pygame.event.get():
         if e.type == pygame.QUIT:
             return False
@@ -172,31 +174,20 @@ def controls():
         if e.type == pygame.JOYAXISMOTION:
             if e.axis == 0:
                 if e.value < -JOY_DEADZONE:
-                    actions.append(('move-left', ownId))
+                    actions.append(('rotate-left', ownId))
                 elif e.value > JOY_DEADZONE:
-                    actions.append(('move-right', ownId))
+                    actions.append(('rotate-right', ownId))
                 else:
-                    if ownPlayer.xdir < 0:
-                        actions.append(('stop-left', ownId))
-                    if ownPlayer.xdir > 0:
-                        actions.append(('stop-right', ownId))
-
-            if e.axis == 1:
-                if e.value < -JOY_DEADZONE:
-                    actions.append(('move-up', ownId))
-                elif e.value > JOY_DEADZONE:
-                    actions.append(('move-down', ownId))
-                else:
-                    if ownPlayer.ydir < 0:
-                        actions.append(('stop-up', ownId))
-                    if ownPlayer.ydir > 0:
-                        actions.append(('stop-down', ownId))
+                    if ownPlayer.rotationDir < 0:
+                        actions.append(('stop-rotate-left', ownId))
+                    if ownPlayer.rotationDir > 0:
+                        actions.append(('stop-rotate-right', ownId))
 
         if e.type == pygame.JOYBUTTONDOWN:
-            actions.append(('fire-press', ownId))
+            actions.append(('move-up', ownId))
 
         if e.type == pygame.JOYBUTTONUP:
-            actions.append(('fire-release', ownId))
+            actions.append(('stop-up', ownId))
 
     return True
 
