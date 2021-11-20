@@ -11,7 +11,7 @@ class PlayerObject(GameObject):
         GameObject.__init__(self, x, y, tile)
         self.particleColor = particleColor
 
-    def getThrust(self, power = 50.0):
+    def getThrust(self, power =65.0):
         r = -math.radians(self.rotation) + 0.5 * math.pi
         return [math.cos(r) * self.ydir * power, math.sin(r) * self.ydir * power]
 
