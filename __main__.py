@@ -41,6 +41,37 @@ font = BitmapFont('gfx/heimatfont.png', scr_w=SCR_W, scr_h=SCR_H, colors=[(255,2
 ownId = 0
 playerSprite = pygame.image.load('gfx/player.png')
 
+tiles = {'#': pygame.image.load('gfx/wall-solid.png'),
+         '1': pygame.image.load('gfx/wall-ramp-lowerright.png'),
+         '2': pygame.image.load('gfx/wall-ramp-lowerleft.png'),
+         '3': pygame.image.load('gfx/wall-ramp-upperright.png'),
+         '4': pygame.image.load('gfx/wall-ramp-upperleft.png'),
+         }
+
+level = ['#########################################',
+         '#4                                    3#',
+         '#                                      #',
+         '#                                   1###',
+         '#                                  1####',
+         '#                                 1#####',
+         '#2                                ######',
+         '#####################             ######',
+         '#################4               1######',
+         '##########4                  ###########',
+         '####4                        3##########',
+         '###4                          3##########',
+         '##4                            3########',
+         '#4                                    3#',
+         '#                                      #',
+         '#                                      #',
+         '#                    1#2               #',
+         '#                   1###2              #',
+         '#                 1######              #',
+         '#              ##########2             #',
+         '#2            1##############2        1#',
+         '########################################',
+         ]
+
 
 
 def toggleFullscreen():
@@ -136,7 +167,14 @@ def render():
     screen.fill((0, 0, 0))
     if tick < 180:
         font.drawText(screen, 'GRAVWERK', 2, 2, fgcolor=(255,255,255))#, bgcolor=(0,0,0))
-        
+
+    for y in range(LEV_H):
+        for x in range(LEV_W):
+            tile = level[y][x]
+
+            if tile in tiles:
+                screen.blit(tiles[tile], (x * TILE_W, y * TILE_H))
+
     for objId, obj in gamestate.objects.items():
         screen.blit(obj.getSprite(), (obj.x, obj.y))
 
