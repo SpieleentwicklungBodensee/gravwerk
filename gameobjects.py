@@ -1,9 +1,12 @@
 from globalconst import *
+import math
 
 class GameObject(object):
     def __init__(self, x, y, tile = None):
         self.x = x
         self.y = y
+        self.rotation = 0
+
         self.tile = tile
 
         self.spawnx = x
@@ -18,37 +21,30 @@ class GameObject(object):
         self.width = TILE_W
         self.height = TILE_H
 
+        self.rotationDir = 0
+
     def getSprite(self):
         return self.tile
 
-    def moveLeft(self):
-        self.xdir = -1
+    def move(self, xdir = None, ydir = None):
+        if xdir is not None:
+            self.xdir = xdir
+        if ydir is not None:
+            self.ydir = ydir
 
-    def moveRight(self):
-        self.xdir = 1
-
-    def moveUp(self):
-        self.ydir = -1
-
-    def moveDown(self):
-        self.ydir = 1
-
-
-    def stopLeft(self):
-        if self.xdir < 0:
+    def stop(self, left, right, up, down):
+        if left and self.xdir < 0:
             self.xdir = 0
-
-    def stopRight(self):
-        if self.xdir > 0:
+        if right and self.xdir > 0:
             self.xdir = 0
-
-    def stopUp(self):
-        if self.ydir < 0:
+        if up and self.ydir < 0:
+            self.ydir = 0
+        if down and self.ydir > 0:
             self.ydir = 0
 
-    def stopDown(self):
-        if self.ydir > 0:
-            self.ydir = 0
+    def rotate(self, direction):
+        self.rotationDir = direction
+
 
 
     def update(self, gamestate):

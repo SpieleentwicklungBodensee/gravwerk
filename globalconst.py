@@ -40,3 +40,7 @@ KEYS_RIGHT = [pygame.K_RIGHT, pygame.K_d]
 KEYS_UP = [pygame.K_UP, pygame.K_w]
 KEYS_DOWN = [pygame.K_DOWN, pygame.K_s]
 KEYS_FIRE = [pygame.K_LCTRL, pygame.K_SPACE]
+KEYS_ROTATE_LEFT = [pygame.K_q]
+KEYS_ROTATE_RIGHT = [pygame.K_e]
+
+ROTATION_SPEED = 5

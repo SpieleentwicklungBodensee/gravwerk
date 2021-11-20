@@ -68,6 +68,11 @@ def controls():
                 actions.append(('move-up', ownId))
             if e.key in KEYS_DOWN:
                 actions.append(('move-down', ownId))
+            if e.key in KEYS_ROTATE_LEFT:
+                actions.append(('rotate-left', ownId))
+            if e.key in KEYS_ROTATE_RIGHT:
+                actions.append(('rotate-right', ownId))
+
 
             if e.key in KEYS_FIRE:
                 actions.append(('fire-press', ownId))
@@ -86,6 +91,10 @@ def controls():
                 actions.append(('stop-up', ownId))
             if e.key in KEYS_DOWN:
                 actions.append(('stop-down', ownId))
+            if e.key in KEYS_ROTATE_LEFT:
+                actions.append(('stop-rotate-left', ownId))
+            if e.key in KEYS_ROTATE_RIGHT:
+                actions.append(('stop-rotate-right', ownId))
 
             if e.key in KEYS_FIRE:
                 actions.append(('fire-release', ownId))
@@ -138,7 +147,9 @@ def render():
         font.drawText(screen, 'GRAVWERK', 2, 2, fgcolor=(255,255,255))#, bgcolor=(0,0,0))
         
     for objId, obj in gamestate.objects.items():
-        screen.blit(obj.getSprite(), (obj.x, obj.y))
+        rotated_sprite = pygame.transform.rotate(obj.getSprite(), obj.rotation)
+        rotated_rect = rotated_sprite.get_rect(center = (obj.x,obj.y))
+        screen.blit(rotated_sprite, rotated_rect)
 
 def update():
     global actions
@@ -155,21 +166,29 @@ def update():
             continue
 
         if action == 'move-left':
-            obj.moveLeft()
+            obj.move(-1, None)
         elif action == 'move-right':
-            obj.moveRight()
+            obj.move(1, None)
         elif action == 'move-up':
-            obj.moveUp()
+            obj.move(None, -1)
         elif action == 'move-down':
-            obj.moveDown()
+            obj.move(None, 1)
+        elif action == 'rotate-left':
+            obj.rotate(1)
+        elif action == 'rotate-right':
+            obj.rotate(-1)
         elif action == 'stop-left':
-            obj.stopLeft()
+            obj.stop(True,False,False,False)
         elif action == 'stop-right':
-            obj.stopRight()
+            obj.stop(False,True,False,False)
         elif action == 'stop-up':
-            obj.stopUp()
+            obj.stop(False,False,True,False)
         elif action == 'stop-down':
-            obj.stopDown()
+            obj.stop(False,False,False,True)
+        elif action == 'stop-rotate-left':
+            obj.rotate(0)
+        elif action == 'stop-rotate-right':
+            obj.rotate(0)
         elif action == 'fire-press':
             obj.interact(gamestate)
         elif action == 'fire-release':
@@ -213,4 +232,3 @@ try:
 
 finally:
     pygame.quit()
-
