@@ -10,16 +10,17 @@ class PlayerObject(GameObject):
     def __init__(self, x, y, tile=None, particleColor = (255,128,0)):
         GameObject.__init__(self, x, y, tile)
         self.particleColor = particleColor
-        self.accel = [0, 0]
+
+    def getThrust(self, power = 50.0):
+        r = -math.radians(self.rotation) + 0.5 * math.pi
+        return [math.cos(r) * self.ydir * power, math.sin(r) * self.ydir * power]
 
     def update(self, gamestate):
         self.rotation = math.fmod(self.rotation + self.rotationDir * ROTATION_CHANGE, 360)
-        r = -math.radians(self.rotation) + 0.5 * math.pi
-        self.accel = [math.cos(r) * self.ydir * 50, math.sin(r) * self.ydir * 50]
-
+        a = self.getThrust()
 
         gravity = 10.0
-        a = [self.accel[0], self.accel[1] + gravity]
+        a[1] += gravity
         pos = [self.x, self.y]
         verlet.integrate1(pos, self.v, a, 1 / FPS)
         verlet.integrate2(pos, self.v, a, 1 / FPS)
@@ -41,9 +42,12 @@ class PlayerObject(GameObject):
         self.checkTileCollision(level, cx +1, cy +1)
 
     def updateLocal(self, gamestate):
-        if self.ydir!=0:
-            particleDirMult=-0.05
-            particlesCreate(self.x,self.y,self.accel[0]*particleDirMult,self.accel[1]*particleDirMult,0.5,self.particleColor,1)
+        thrust = self.getThrust()
+        if thrust[0] != 0 or thrust[1] != 0:
+            particleDirMult = -3.0
+            thrust[0] *= particleDirMult / FPS
+            thrust[1] *= particleDirMult / FPS
+            particlesCreate(self.x,self.y,thrust[0] + self.v[0]/FPS,thrust[1] + self.v[1]/FPS,0.5,self.particleColor,1)
 
     def checkTileCollision(self, level, cx, cy):
         debugTiles.append((cx, cy))
@@ -57,5 +61,4 @@ class PlayerObject(GameObject):
 
         if checkPixelTileCollision(self, tileId, cx, cy):
             print('coll!')
-
 
