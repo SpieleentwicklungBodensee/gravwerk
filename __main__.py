@@ -91,14 +91,6 @@ def controls():
             if e.key == pygame.K_ESCAPE:
                 return False
 
-            if e.key in KEYS_LEFT:
-                actions.append(('move-left', ownId))
-            if e.key in KEYS_RIGHT:
-                actions.append(('move-right', ownId))
-            if e.key in KEYS_UP:
-                actions.append(('move-up', ownId))
-            if e.key in KEYS_DOWN:
-                actions.append(('move-down', ownId))
             if e.key in KEYS_ROTATE_LEFT:
                 actions.append(('rotate-left', ownId))
             if e.key in KEYS_ROTATE_RIGHT:
@@ -114,14 +106,6 @@ def controls():
                     toggleFullscreen()
 
         if e.type == pygame.KEYUP:
-            if e.key in KEYS_LEFT:
-                actions.append(('stop-left', ownId))
-            if e.key in KEYS_RIGHT:
-                actions.append(('stop-right', ownId))
-            if e.key in KEYS_UP:
-                actions.append(('stop-up', ownId))
-            if e.key in KEYS_DOWN:
-                actions.append(('stop-down', ownId))
             if e.key in KEYS_ROTATE_LEFT:
                 actions.append(('stop-rotate-left', ownId))
             if e.key in KEYS_ROTATE_RIGHT:
