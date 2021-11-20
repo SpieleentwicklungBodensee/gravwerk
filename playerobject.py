@@ -1,6 +1,8 @@
 from globalconst import *
 from gameobjects import *
 from particles import *
+from graphics import *
+
 import math
 import verlet
 
@@ -23,8 +25,37 @@ class PlayerObject(GameObject):
         verlet.integrate2(pos, self.v, a, 1 / FPS)
         self.x, self.y = pos
 
+
+        # collision with level
+        cx, cy = int(self.x // TILE_W), int(self.y // TILE_H)
+        level = gamestate.level
+
+        self.checkTileCollision(level, cx -1, cy -1)
+        self.checkTileCollision(level, cx +0, cy -1)
+        self.checkTileCollision(level, cx +1, cy -1)
+        self.checkTileCollision(level, cx -1, cy)
+        self.checkTileCollision(level, cx +0, cy)
+        self.checkTileCollision(level, cx +1, cy)
+        self.checkTileCollision(level, cx -1, cy +1)
+        self.checkTileCollision(level, cx +0, cy +1)
+        self.checkTileCollision(level, cx +1, cy +1)
+
     def updateLocal(self, gamestate):
         if self.ydir!=0:
             particleDirMult=-0.05
             particlesCreate(self.x,self.y,self.accel[0]*particleDirMult,self.accel[1]*particleDirMult,0.5,self.particleColor,1)
+
+    def checkTileCollision(self, level, cx, cy):
+        debugTiles.append((cx, cy))
+
+        tileId = level[cy][cx]
+
+        if tileId == ' ':
+            return False
+
+        tile = getTiles()[tileId]
+
+        if checkPixelTileCollision(self, tileId, cx, cy):
+            print('coll!')
+
 

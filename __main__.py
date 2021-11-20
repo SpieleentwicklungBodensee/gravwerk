@@ -12,6 +12,7 @@ from gameobjects import *
 from playerobject import *
 from gamestate import *
 from particles import *
+from graphics import *
 
 import network
 import sound
@@ -56,22 +57,7 @@ for i in range(pygame.joystick.get_count()):
 
 pygame.mouse.set_visible(False)
 
-font = BitmapFont('gfx/heimatfont.png', scr_w=SCR_W, scr_h=SCR_H, colors=[(255,255,255), (240,0,240)])
 
-
-tiles = {'#': pygame.image.load('gfx/wall-solid.png'),
-         '1': pygame.image.load('gfx/wall-ramp-lowerright.png'),
-         '2': pygame.image.load('gfx/wall-ramp-lowerleft.png'),
-         '3': pygame.image.load('gfx/wall-ramp-upperright.png'),
-         '4': pygame.image.load('gfx/wall-ramp-upperleft.png'),
-
-         'player0': pygame.image.load('gfx/player0.png'),
-         'player1': pygame.image.load('gfx/player1.png'),
-         'player2': pygame.image.load('gfx/player2.png'),
-         'player3': pygame.image.load('gfx/player3.png'),
-         'player4': pygame.image.load('gfx/player4.png'),
-         'player5': pygame.image.load('gfx/player5.png'),
-         }
 
 level = ['#########################################',
          '#4                                    3#',
@@ -192,25 +178,28 @@ def controls():
 def render():
     screen.fill((0, 0, 0))
     if tick < 180:
-        font.drawText(screen, 'GRAVWERK', 2, 2, fgcolor=(255,255,255))#, bgcolor=(0,0,0))
+        getFont().drawText(screen, 'GRAVWERK', 2, 2, fgcolor=(255,255,255))#, bgcolor=(0,0,0))
 
     for y in range(LEV_H):
         for x in range(LEV_W):
             tileId = level[y][x]
 
-            if tileId in tiles:
-                screen.blit(tiles[tileId], (x * TILE_W, y * TILE_H))
+            if tileId in getTiles():
+                screen.blit(getTiles()[tileId], (x * TILE_W, y * TILE_H))
 
     for objId, obj in gamestate.objects.items():
         tileId = obj.getSprite()
-        if not tileId in tiles:
+        if not tileId in getTiles():
             continue
-        tile = tiles[tileId]
+        tile = getTiles()[tileId]
 
-        rotated_sprite = pygame.transform.rotate(tile, obj.rotation)
-        rotated_sprite = pygame.transform.scale(rotated_sprite, (round(rotated_sprite.get_size()[0]/16),round(rotated_sprite.get_size()[1]/16)))
-        rotated_rect = rotated_sprite.get_rect(center = (obj.x,obj.y))
+        rotated_sprite, rotated_rect = rotateSprite(obj)
+
         screen.blit(rotated_sprite, rotated_rect)
+
+    for cx, cy in debugTiles:
+        screen.blit(getTiles()['debug'], (cx * TILE_W, cy * TILE_H))
+    debugTiles.clear()
 
     particlesRender(screen)
 
@@ -307,10 +296,12 @@ def init():
 
     gamestate = GameState()
     gamestate.objects[ownId] = player
+    gamestate.level = level
 
     particlesInit()
 
 
+loadGraphics()
 init()
 
 tick = 0
