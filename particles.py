@@ -63,7 +63,7 @@ def particlesUpdate():
         e.xv*=0.99
         e.yv*=0.99
 
-def particlesRender(surface):
+def particlesRender(surface,cam_pos):
     global psE
     for e in psE:
-        surface.set_at((round(e.x),round(e.y)),e.c)
+        surface.set_at((round(e.x-cam_pos[0]),round(e.y-cam_pos[1])),e.c)
