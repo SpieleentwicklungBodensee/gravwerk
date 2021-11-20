@@ -336,4 +336,7 @@ try:
         clock.tick(FPS)
 
 finally:
+    if net is not None:
+        net.stop()
+
     pygame.quit()
