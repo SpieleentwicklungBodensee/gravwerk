@@ -228,9 +228,10 @@ def render():
     for wobjId, obj in gamestate.objects.items():
         render_object(obj,camera_pos)
 
-    for cx, cy in debugTiles:
-        screen.blit(getTiles()['debug'], (cx * TILE_W - camera_pos[0], cy * TILE_H - camera_pos[1]))
-    debugTiles.clear()
+    if DEBUG_MODE:
+        for cx, cy in debugTiles:
+            screen.blit(getTiles()['debug'], (cx * TILE_W - camera_pos[0], cy * TILE_H - camera_pos[1]))
+        debugTiles.clear()
 
     particlesRender(screen,camera_pos)
 
