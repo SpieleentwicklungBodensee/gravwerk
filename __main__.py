@@ -201,7 +201,6 @@ def update():
             obj.move(1, None)
         elif action == 'move-up':
             obj.move(None, -1)
-            particlesCreate(obj.x,obj.y,1,(255,255,0),10)
         elif action == 'move-down':
             obj.move(None, 1)
         elif action == 'rotate-left':

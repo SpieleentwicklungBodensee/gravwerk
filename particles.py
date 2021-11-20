@@ -40,6 +40,20 @@ def particlesCreate(x,y,speed,color,count):
         psE[PS_I].yv=random.uniform(-speed,speed)
         psE[PS_I].c=color
 
+def particlesCreate(x,y,xSpeed,ySpeed,rndSpeed,color,count):
+    global PS_N
+    global PS_I
+    global psE
+    for i in range(count):
+        PS_I+=1
+        if PS_I==PS_N:
+            PS_I=0
+        psE[PS_I].x=x
+        psE[PS_I].y=y
+        psE[PS_I].xv=xSpeed+random.uniform(-rndSpeed,rndSpeed)
+        psE[PS_I].yv=ySpeed+random.uniform(-rndSpeed,rndSpeed)
+        psE[PS_I].c=color
+
 def particlesUpdate():
     global psE
     for e in psE:
