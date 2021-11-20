@@ -5,7 +5,7 @@ import os
 import random
 import math
 
-from reportlab.lib.colors import obj_R_G_B
+
 
 from bitmapfont import BitmapFont
 
