@@ -9,5 +9,11 @@ class PlayerObject(GameObject):
     def update(self, gamestate):
         self.x += self.xdir * self.speed
         self.y += self.ydir * self.speed
-        self.rotation = math.fmod(self.rotation + self.rotationDir * ROTATION_SPEED, 360)
+
+        self.rotationSpeed += self.rotationDir * ROTATION_CHANGE
+        if self.rotationSpeed > MAX_ROTATION_SPEED:
+            self.rotationSpeed = MAX_ROTATION_SPEED
+        elif self.rotationSpeed < -MAX_ROTATION_SPEED:
+            self.rotationSpeed = -MAX_ROTATION_SPEED
+        self.rotation = math.fmod(self.rotation + self.rotationSpeed, 360)
 

@@ -22,6 +22,7 @@ class GameObject(object):
         self.height = TILE_H
 
         self.rotationDir = 0
+        self.rotationSpeed = 0
 
     def getSprite(self):
         return self.tile
