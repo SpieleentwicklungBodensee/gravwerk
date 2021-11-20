@@ -18,20 +18,19 @@ import sound
 
 actions = []
 gamestate = None
+playerColor = 0
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--connect')
 parser.add_argument('--port', type=int, default=2000)
 parser.add_argument('--host', action='store_true')
-parser.add_argument('--nosnake', action='store_true')
-parser.add_argument('--level', type=str, default='LEV1')
 args = parser.parse_args()
 
 net = None
 clients = {}
+ownId = int(random.random() * 1000000)
 if args.connect is not None:
     net = network.connect(args.connect, args.port)
-    ownId = int(random.random() * 1000000)
     actions.append(('create-player', ownId))
     print('i am player with id=', ownId)
 elif args.host:
@@ -59,15 +58,18 @@ pygame.mouse.set_visible(False)
 font = BitmapFont('gfx/heimatfont.png', scr_w=SCR_W, scr_h=SCR_H, colors=[(255,255,255), (240,0,240)])
 
 
-ownId = 0
-
 tiles = {'#': pygame.image.load('gfx/wall-solid.png'),
          '1': pygame.image.load('gfx/wall-ramp-lowerright.png'),
          '2': pygame.image.load('gfx/wall-ramp-lowerleft.png'),
          '3': pygame.image.load('gfx/wall-ramp-upperright.png'),
          '4': pygame.image.load('gfx/wall-ramp-upperleft.png'),
 
-         'player': pygame.image.load('gfx/player.png'),
+         'player0': pygame.image.load('gfx/player0.png'),
+         'player1': pygame.image.load('gfx/player1.png'),
+         'player2': pygame.image.load('gfx/player2.png'),
+         'player3': pygame.image.load('gfx/player3.png'),
+         'player4': pygame.image.load('gfx/player4.png'),
+         'player5': pygame.image.load('gfx/player5.png'),
          }
 
 level = ['#########################################',
@@ -104,6 +106,21 @@ def toggleFullscreen():
         window = pygame.display.set_mode(pygame.display.list_modes()[0], pygame.FULLSCREEN)
     else:
         window = pygame.display.set_mode((WIN_W, WIN_H), 0)
+
+def createPlayer(objId):
+    global playerColor, gamestate
+
+
+    # create ordinary player
+    x, y = (0,0)
+    newPlayer = PlayerObject(SCR_W // 2, SCR_H // 2, tile='player'+str(playerColor))
+    playerColor += 1
+    playerColor %= 6
+    gamestate.objects[objId] = newPlayer
+    print('created player with id=', objId)
+
+def removePlayer(objId):
+    del gamestate.objects[objId]
 
 def controls():
     for e in pygame.event.get():
@@ -233,7 +250,22 @@ def update():
     clientId = None
     for action, objId in actions:
 
+        if action == 'client-actions':
+            clientId = objId
+            continue
+        if action == 'client-disconnect':
+            if objId in clients:
+                removePlayer(clients[objId])
+            continue
+
+        if action == 'create-player':
+            clients[clientId] = objId
+            createPlayer(objId)
+            continue
+
         obj = gamestate.objects.get(objId)
+
+        print('action:', action, 'objId:', objId, 'obj:', obj)
 
         if not obj:
             continue
@@ -271,9 +303,11 @@ def update():
 
 
 def init():
-    global gamestate
+    global gamestate,playerColor
 
-    player = PlayerObject(SCR_W // 2, SCR_H // 2, tile='player')
+    player = PlayerObject(SCR_W // 2, SCR_H // 2, tile='player'+str(playerColor))
+
+    playerColor +=1
 
     gamestate = GameState()
     gamestate.objects[ownId] = player
