@@ -230,6 +230,10 @@ def update():
         for obj in gamestate.objects.values():
             obj.update(gamestate)
 
+    for obj in gamestate.objects.values():
+        obj.updateLocal(gamestate)
+
+
     if net is not None:
         # as a host, put all played sounds into the queue
         if net.isHost():
