@@ -50,7 +50,7 @@ class PlayerObject(GameObject):
             particlesCreate(self.x,self.y,thrust[0] + self.v[0]/FPS,thrust[1] + self.v[1]/FPS,0.5,self.particleColor,1)
 
     def checkTileCollision(self, level, cx, cy):
-        if cx >= LEV_W or cy >= LEV_H:
+        if cx >= len(level[0]) or cy >= len(level):
             return
 
         debugTiles.append((cx, cy))

@@ -231,7 +231,7 @@ def render():
     if DEBUG_MODE:
         for cx, cy in debugTiles:
             screen.blit(getTiles()['debug'], (cx * TILE_W - camera_pos[0], cy * TILE_H - camera_pos[1]))
-        debugTiles.clear()
+    debugTiles.clear()
 
     particlesRender(screen,camera_pos)
 

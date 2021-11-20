@@ -9,9 +9,6 @@ WIN_H = 720
 TILE_W = 8
 TILE_H = 8
 
-LEV_W = 40
-LEV_H = 22
-
 FPS = 60
 
 LEFT = 0
