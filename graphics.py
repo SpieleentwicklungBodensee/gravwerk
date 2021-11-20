@@ -48,9 +48,20 @@ def rotateSprite(obj):
 
     tile = tiles[tileId]
 
-    rotated_sprite = pygame.transform.rotate(tile, obj.rotation)
-    rotated_sprite = pygame.transform.scale(rotated_sprite, (round(rotated_sprite.get_size()[0]/16),round(rotated_sprite.get_size()[1]/16)))
-    rotated_rect = rotated_sprite.get_rect(center = (obj.x,obj.y))
+    # no filtering
+    #rotated_sprite = pygame.transform.rotate(tile, obj.rotation)
+    #rotated_sprite = pygame.transform.scale(rotated_sprite, (round(rotated_sprite.get_size()[0] / 16), round(rotated_sprite.get_size()[1] / 16)))
+
+    # instant filtering
+    #rotated_sprite = pygame.transform.rotozoom(tile, obj.rotation, 1.0/16.0)
+
+    # multi-step filtering
+    rotated_sprite = pygame.transform.rotozoom(tile, obj.rotation, 0.5)
+    rotated_sprite = pygame.transform.rotozoom(rotated_sprite, 0, 0.5)
+    rotated_sprite = pygame.transform.rotozoom(rotated_sprite, 0, 0.5)
+    rotated_sprite = pygame.transform.rotozoom(rotated_sprite, 0, 0.5)
+
+    rotated_rect = rotated_sprite.get_rect(center=(obj.x, obj.y))
 
     rotatedSprites[obj] = (rotated_sprite, rotated_rect)
     rotatedMasks[obj] = pygame.mask.from_surface(rotated_sprite)
