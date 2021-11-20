@@ -12,9 +12,29 @@ from gameobjects import *
 from playerobject import *
 from gamestate import *
 
+import network
+import sound
 
 actions = []
 gamestate = None
+
+parser = argparse.ArgumentParser()
+parser.add_argument('--connect')
+parser.add_argument('--port', type=int, default=2000)
+parser.add_argument('--host', action='store_true')
+parser.add_argument('--nosnake', action='store_true')
+parser.add_argument('--level', type=str, default='LEV1')
+args = parser.parse_args()
+
+net = None
+clients = {}
+if args.connect is not None:
+    net = network.connect(args.connect, args.port)
+    ownId = int(random.random() * 1000000)
+    actions.append(('create-player', ownId))
+    print('i am player with id=', ownId)
+elif args.host:
+    net = network.serve(args.port)
 
 pygame.display.init()
 
@@ -72,6 +92,7 @@ level = ['#########################################',
          '########################################',
          ]
 
+gamestate = GameState()
 
 
 def toggleFullscreen():
@@ -177,10 +198,27 @@ def render():
         screen.blit(rotated_sprite, rotated_rect)
 
 def update():
-    global actions
+    global actions, gamestate
 
-    for obj in gamestate.objects.values():
-        obj.update(gamestate)
+    if net is None or net.isHost():
+        for obj in gamestate.objects.values():
+            obj.update(gamestate)
+
+    if net is not None:
+        # as a host, put all played sounds into the queue
+        if net.isHost():
+            for soundname in sound.popHistory():
+                gamestate.soundQueue.add(soundname)
+
+        # sync gamestate over network
+        gamestate, actions = net.update(gamestate, actions)
+        ownPlayer = gamestate.objects.get(ownId)
+
+        # retrieve sounds to be played as a client
+        if not net.isHost():
+            for soundname in gamestate.soundQueue:
+                sound.playSound(soundname)
+        gamestate.soundQueue = set()
 
     clientId = None
     for action, objId in actions:
