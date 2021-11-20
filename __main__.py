@@ -13,9 +13,29 @@ from playerobject import *
 from gamestate import *
 from particles import *
 
+import network
+import sound
 
 actions = []
 gamestate = None
+
+parser = argparse.ArgumentParser()
+parser.add_argument('--connect')
+parser.add_argument('--port', type=int, default=2000)
+parser.add_argument('--host', action='store_true')
+parser.add_argument('--nosnake', action='store_true')
+parser.add_argument('--level', type=str, default='LEV1')
+args = parser.parse_args()
+
+net = None
+clients = {}
+if args.connect is not None:
+    net = network.connect(args.connect, args.port)
+    ownId = int(random.random() * 1000000)
+    actions.append(('create-player', ownId))
+    print('i am player with id=', ownId)
+elif args.host:
+    net = network.serve(args.port)
 
 pygame.display.init()
 
@@ -40,13 +60,14 @@ font = BitmapFont('gfx/heimatfont.png', scr_w=SCR_W, scr_h=SCR_H, colors=[(255,2
 
 
 ownId = 0
-playerSprite = pygame.image.load('gfx/player.png')
 
 tiles = {'#': pygame.image.load('gfx/wall-solid.png'),
          '1': pygame.image.load('gfx/wall-ramp-lowerright.png'),
          '2': pygame.image.load('gfx/wall-ramp-lowerleft.png'),
          '3': pygame.image.load('gfx/wall-ramp-upperright.png'),
          '4': pygame.image.load('gfx/wall-ramp-upperleft.png'),
+
+         'player': pygame.image.load('gfx/player.png'),
          }
 
 level = ['#########################################',
@@ -73,6 +94,7 @@ level = ['#########################################',
          '########################################',
          ]
 
+gamestate = GameState()
 
 
 def toggleFullscreen():
@@ -167,23 +189,44 @@ def render():
 
     for y in range(LEV_H):
         for x in range(LEV_W):
-            tile = level[y][x]
+            tileId = level[y][x]
 
-            if tile in tiles:
-                screen.blit(tiles[tile], (x * TILE_W, y * TILE_H))
+            if tileId in tiles:
+                screen.blit(tiles[tileId], (x * TILE_W, y * TILE_H))
 
     for objId, obj in gamestate.objects.items():
-        rotated_sprite = pygame.transform.rotate(obj.getSprite(), obj.rotation)
+        tileId = obj.getSprite()
+        if not tileId in tiles:
+            continue
+        tile = tiles[tileId]
+        rotated_sprite = pygame.transform.rotate(tile, obj.rotation)
         rotated_rect = rotated_sprite.get_rect(center = (obj.x,obj.y))
         screen.blit(rotated_sprite, rotated_rect)
 
     particlesRender(screen)
 
 def update():
-    global actions
+    global actions, gamestate
 
-    for obj in gamestate.objects.values():
-        obj.update(gamestate)
+    if net is None or net.isHost():
+        for obj in gamestate.objects.values():
+            obj.update(gamestate)
+
+    if net is not None:
+        # as a host, put all played sounds into the queue
+        if net.isHost():
+            for soundname in sound.popHistory():
+                gamestate.soundQueue.add(soundname)
+
+        # sync gamestate over network
+        gamestate, actions = net.update(gamestate, actions)
+        ownPlayer = gamestate.objects.get(ownId)
+
+        # retrieve sounds to be played as a client
+        if not net.isHost():
+            for soundname in gamestate.soundQueue:
+                sound.playSound(soundname)
+        gamestate.soundQueue = set()
 
     particlesUpdate()
 
@@ -231,7 +274,7 @@ def update():
 def init():
     global gamestate
 
-    player = PlayerObject(SCR_W // 2, SCR_H // 2, playerSprite)
+    player = PlayerObject(SCR_W // 2, SCR_H // 2, tile='player')
 
     gamestate = GameState()
     gamestate.objects[ownId] = player
