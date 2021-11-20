@@ -35,8 +35,9 @@ WORM_RESPAWN_TIME = 1.5
 BALL_RESPAWN_TIME = 1.0
 BALL_RESPAWN_TIME_AFTER_GOAL = 2.5
 
-KEYS_LEFT = [pygame.K_LEFT, pygame.K_a]
-KEYS_RIGHT = [pygame.K_RIGHT, pygame.K_d]
-KEYS_UP = [pygame.K_UP, pygame.K_w]
-KEYS_DOWN = [pygame.K_DOWN, pygame.K_s]
 KEYS_FIRE = [pygame.K_LCTRL, pygame.K_SPACE]
+KEYS_THRUST = [pygame.K_w, pygame.K_UP]
+KEYS_ROTATE_LEFT = [pygame.K_a, pygame.K_LEFT]
+KEYS_ROTATE_RIGHT = [pygame.K_d, pygame.K_RIGHT]
+
+ROTATION_CHANGE = 5
