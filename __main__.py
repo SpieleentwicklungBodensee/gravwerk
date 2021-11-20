@@ -223,7 +223,7 @@ def render():
         font.drawText(screen, 'GRAVWERK', 2, 2, fgcolor=(255,255,255))#, bgcolor=(0,0,0))
 
     #get own position
-    camera_pos = None
+    camera_pos = (0,0)
     for obj_id ,obj in gamestate.objects.items():
         if obj_id == ownId:
             camera_pos = (obj.x - SCR_W/2 + TILE_W/2, obj.y - SCR_H/2 + TILE_H/2)
