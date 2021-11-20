@@ -20,20 +20,20 @@ import sound
 
 actions = []
 gamestate = None
+playerColor = 0
+particleColors = [(62,154,193),(221,61,0),(49,221,0),(188,62,193),(193,182,62),(120,120,120)]
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--connect')
 parser.add_argument('--port', type=int, default=2000)
 parser.add_argument('--host', action='store_true')
-parser.add_argument('--nosnake', action='store_true')
-parser.add_argument('--level', type=str, default='LEV1')
 args = parser.parse_args()
 
 net = None
 clients = {}
+ownId = int(random.random() * 1000000)
 if args.connect is not None:
     net = network.connect(args.connect, args.port)
-    ownId = int(random.random() * 1000000)
     actions.append(('create-player', ownId))
     print('i am player with id=', ownId)
 elif args.host:
@@ -61,15 +61,18 @@ pygame.mouse.set_visible(False)
 font = BitmapFont('gfx/heimatfont.png', scr_w=SCR_W, scr_h=SCR_H, colors=[(255,255,255), (240,0,240)])
 
 
-ownId = 0
-
 tiles = {'#': pygame.image.load('gfx/wall-solid.png'),
          '1': pygame.image.load('gfx/wall-ramp-lowerright.png'),
          '2': pygame.image.load('gfx/wall-ramp-lowerleft.png'),
          '3': pygame.image.load('gfx/wall-ramp-upperright.png'),
          '4': pygame.image.load('gfx/wall-ramp-upperleft.png'),
 
-         'player': pygame.image.load('gfx/player.png'),
+         'player0': pygame.image.load('gfx/player0.png'),
+         'player1': pygame.image.load('gfx/player1.png'),
+         'player2': pygame.image.load('gfx/player2.png'),
+         'player3': pygame.image.load('gfx/player3.png'),
+         'player4': pygame.image.load('gfx/player4.png'),
+         'player5': pygame.image.load('gfx/player5.png'),
          }
 
 level = ['###############################################################################',
@@ -119,6 +122,8 @@ def render_object(obj,position):
         return
     tile = tiles[tileId]
     rotated_sprite = pygame.transform.rotate(tile, obj.rotation)
+    rotated_sprite = pygame.transform.scale(rotated_sprite, (round(rotated_sprite.get_size()[0] / 16), round(rotated_sprite.get_size()[1] / 16)))
+
     rotated_rect = rotated_sprite.get_rect(center=(position[0], position[1]))
     screen.blit(rotated_sprite, rotated_rect)
 
@@ -131,7 +136,24 @@ def toggleFullscreen():
     else:
         window = pygame.display.set_mode((WIN_W, WIN_H), 0)
 
+def createPlayer(objId):
+    global playerColor, gamestate
+
+
+    # create ordinary player
+    x, y = (0,0)
+    newPlayer = PlayerObject(SCR_W // 2, SCR_H // 2, tile='player'+str(playerColor), particleColor=particleColors[playerColor])
+    playerColor += 1
+    playerColor %= 6
+    gamestate.objects[objId] = newPlayer
+    print('created player with id=', objId)
+
+def removePlayer(objId):
+    del gamestate.objects[objId]
+
 def controls():
+    global ownId, actions, gamestate
+
     for e in pygame.event.get():
         if e.type == pygame.QUIT:
             return False
@@ -180,31 +202,18 @@ def controls():
         if e.type == pygame.JOYAXISMOTION:
             if e.axis == 0:
                 if e.value < -JOY_DEADZONE:
-                    actions.append(('move-left', ownId))
+                    actions.append(('rotate-left', ownId))
                 elif e.value > JOY_DEADZONE:
-                    actions.append(('move-right', ownId))
+                    actions.append(('rotate-right', ownId))
                 else:
-                    if ownPlayer.xdir < 0:
-                        actions.append(('stop-left', ownId))
-                    if ownPlayer.xdir > 0:
-                        actions.append(('stop-right', ownId))
-
-            if e.axis == 1:
-                if e.value < -JOY_DEADZONE:
-                    actions.append(('move-up', ownId))
-                elif e.value > JOY_DEADZONE:
-                    actions.append(('move-down', ownId))
-                else:
-                    if ownPlayer.ydir < 0:
-                        actions.append(('stop-up', ownId))
-                    if ownPlayer.ydir > 0:
-                        actions.append(('stop-down', ownId))
+                    actions.append(('stop-rotate-left', ownId))
+                    actions.append(('stop-rotate-right', ownId))
 
         if e.type == pygame.JOYBUTTONDOWN:
-            actions.append(('fire-press', ownId))
+            actions.append(('move-up', ownId))
 
         if e.type == pygame.JOYBUTTONUP:
-            actions.append(('fire-release', ownId))
+            actions.append(('stop-up', ownId))
 
     return True
 
@@ -233,8 +242,6 @@ def render():
     for wobjId, obj in gamestate.objects.items():
         render_object(obj,(obj.x - camera_pos[0],obj.y - camera_pos[1]))
 
-
-
     particlesRender(screen,camera_pos)
 
 def update():
@@ -243,6 +250,10 @@ def update():
     if net is None or net.isHost():
         for obj in gamestate.objects.values():
             obj.update(gamestate)
+
+    for obj in gamestate.objects.values():
+        obj.updateLocal(gamestate)
+
 
     if net is not None:
         # as a host, put all played sounds into the queue
@@ -265,7 +276,22 @@ def update():
     clientId = None
     for action, objId in actions:
 
+        if action == 'client-actions':
+            clientId = objId
+            continue
+        if action == 'client-disconnect':
+            if objId in clients:
+                removePlayer(clients[objId])
+            continue
+
+        if action == 'create-player':
+            clients[clientId] = objId
+            createPlayer(objId)
+            continue
+
         obj = gamestate.objects.get(objId)
+
+        print('action:', action, 'objId:', objId)
 
         if not obj:
             continue
@@ -303,9 +329,11 @@ def update():
 
 
 def init():
-    global gamestate
+    global gamestate,playerColor,particleColors
 
-    player = PlayerObject(SCR_W // 2, SCR_H // 2, tile='player')
+    player = PlayerObject(SCR_W // 2, SCR_H // 2, tile='player'+str(playerColor),particleColor = particleColors[playerColor])
+
+    playerColor +=1
 
     gamestate = GameState()
     gamestate.objects[ownId] = player
@@ -338,4 +366,7 @@ try:
         clock.tick(FPS)
 
 finally:
+    if net is not None:
+        net.stop()
+
     pygame.quit()

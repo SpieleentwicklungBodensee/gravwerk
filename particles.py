@@ -26,20 +26,6 @@ def particlesInit():
     for i in range(PS_N):
         psE.append(Particle())
 
-def particlesCreate(x,y,speed,color,count):
-    global PS_N
-    global PS_I
-    global psE
-    for i in range(count):
-        PS_I+=1
-        if PS_I==PS_N:
-            PS_I=0
-        psE[PS_I].x=x
-        psE[PS_I].y=y
-        psE[PS_I].xv=random.uniform(-speed,speed)
-        psE[PS_I].yv=random.uniform(-speed,speed)
-        psE[PS_I].c=color
-
 def particlesCreate(x,y,xSpeed,ySpeed,rndSpeed,color,count):
     global PS_N
     global PS_I
@@ -67,3 +53,12 @@ def particlesRender(surface,cam_pos):
     global psE
     for e in psE:
         surface.set_at((round(e.x-cam_pos[0]),round(e.y-cam_pos[1])),e.c)
+
+    # screen crumble effect
+    if random.uniform(0,1)<0.1:
+        x=round(random.uniform(0,surface.get_size()[0]-1))
+        y=round(random.uniform(0,surface.get_size()[1]-1))
+        c=surface.get_at((x,y))
+        if c!=(0,0,0):
+            particlesCreate(x,y,0,0,0,c,1)
+
