@@ -20,7 +20,7 @@ def particlesInit():
     global PS_N
     global PS_I
     global psE
-    PS_N=2048
+    PS_N=1024
     PS_I=0
     psE=[]
     for i in range(PS_N):
@@ -43,8 +43,8 @@ def particlesCreate(x,y,xSpeed,ySpeed,rndSpeed,color,count):
 def particlesUpdate():
     global psE
     for e in psE:
-        e.x=e.x+e.xv
-        e.y=e.y+e.yv
+        e.x+=e.xv
+        e.y+=e.yv
         e.yv+=0.02
         e.xv*=0.99
         e.yv*=0.99
