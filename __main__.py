@@ -19,6 +19,7 @@ import sound
 actions = []
 gamestate = None
 playerColor = 0
+particleColors = [(62,154,193),(221,61,0),(49,221,0),(188,62,193),(193,182,62),(120,120,120)]
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--connect')
@@ -113,7 +114,7 @@ def createPlayer(objId):
 
     # create ordinary player
     x, y = (0,0)
-    newPlayer = PlayerObject(SCR_W // 2, SCR_H // 2, tile='player'+str(playerColor))
+    newPlayer = PlayerObject(SCR_W // 2, SCR_H // 2, tile='player'+str(playerColor), particleColor=particleColors[playerColor])
     playerColor += 1
     playerColor %= 6
     gamestate.objects[objId] = newPlayer
@@ -265,7 +266,7 @@ def update():
 
         obj = gamestate.objects.get(objId)
 
-        print('action:', action, 'objId:', objId, 'obj:', obj)
+        print('action:', action, 'objId:', objId)
 
         if not obj:
             continue
@@ -303,9 +304,9 @@ def update():
 
 
 def init():
-    global gamestate,playerColor
+    global gamestate,playerColor,particleColors
 
-    player = PlayerObject(SCR_W // 2, SCR_H // 2, tile='player'+str(playerColor))
+    player = PlayerObject(SCR_W // 2, SCR_H // 2, tile='player'+str(playerColor),particleColor = particleColors[playerColor])
 
     playerColor +=1
 
