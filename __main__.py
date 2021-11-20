@@ -226,7 +226,7 @@ def render():
     camera_pos = (0,0)
     for obj_id ,obj in gamestate.objects.items():
         if obj_id == ownId:
-            camera_pos = (obj.x - SCR_W/2 + TILE_W/2, obj.y - SCR_H/2 + TILE_H/2)
+            camera_pos = (round(obj.x - SCR_W/2 + TILE_W/2), round(obj.y - SCR_H/2 + TILE_H/2))
             break
 
 
