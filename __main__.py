@@ -124,7 +124,7 @@ def removePlayer(objId):
     del gamestate.objects[objId]
 
 def controls():
-    ownPlayer = gamestate.objects[ownId]
+    global ownId, actions, gamestate
 
     for e in pygame.event.get():
         if e.type == pygame.QUIT:
@@ -178,10 +178,8 @@ def controls():
                 elif e.value > JOY_DEADZONE:
                     actions.append(('rotate-right', ownId))
                 else:
-                    if ownPlayer.rotationDir < 0:
-                        actions.append(('stop-rotate-left', ownId))
-                    if ownPlayer.rotationDir > 0:
-                        actions.append(('stop-rotate-right', ownId))
+                    actions.append(('stop-rotate-left', ownId))
+                    actions.append(('stop-rotate-right', ownId))
 
         if e.type == pygame.JOYBUTTONDOWN:
             actions.append(('move-up', ownId))
