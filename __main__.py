@@ -8,10 +8,13 @@ import math
 from bitmapfont import BitmapFont
 
 from globalconst import *
+from gameobjects import *
+from playerobject import *
+from gamestate import *
 
 
 actions = []
-objects = {}
+gamestate = None
 
 pygame.display.init()
 
@@ -33,6 +36,10 @@ for i in range(pygame.joystick.get_count()):
 pygame.mouse.set_visible(False)
 
 font = BitmapFont('gfx/heimatfont.png', scr_w=SCR_W, scr_h=SCR_H, colors=[(255,255,255), (240,0,240)])
+
+
+ownId = 0
+playerSprite = pygame.image.load('gfx/player.png')
 
 
 
@@ -126,12 +133,18 @@ def controls():
     return True
 
 def render():
-    screen.fill((0, 128, 0))
+    screen.fill((0, 0, 0))
     if tick < 180:
         font.drawText(screen, 'GRAVWERK', 2, 2, fgcolor=(255,255,255))#, bgcolor=(0,0,0))
+        
+    for objId, obj in gamestate.objects.items():
+        screen.blit(obj.getSprite(), (obj.x, obj.y))
 
 def update():
     global actions
+
+    for obj in gamestate.objects.values():
+        obj.update(gamestate)
 
     clientId = None
     for action, objId in actions:
@@ -166,7 +179,12 @@ def update():
 
 
 def init():
-    pass
+    global gamestate
+
+    player = PlayerObject(SCR_W // 2, SCR_H // 2, playerSprite)
+
+    gamestate = GameState()
+    gamestate.objects[ownId] = player
 
 
 init()
