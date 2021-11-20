@@ -28,9 +28,9 @@ args = parser.parse_args()
 
 net = None
 clients = {}
+ownId = int(random.random() * 1000000)
 if args.connect is not None:
     net = network.connect(args.connect, args.port)
-    ownId = int(random.random() * 1000000)
     actions.append(('create-player', ownId))
     print('i am player with id=', ownId)
 elif args.host:
@@ -57,8 +57,6 @@ pygame.mouse.set_visible(False)
 
 font = BitmapFont('gfx/heimatfont.png', scr_w=SCR_W, scr_h=SCR_H, colors=[(255,255,255), (240,0,240)])
 
-
-ownId = 0
 
 tiles = {'#': pygame.image.load('gfx/wall-solid.png'),
          '1': pygame.image.load('gfx/wall-ramp-lowerright.png'),
@@ -266,6 +264,8 @@ def update():
             continue
 
         obj = gamestate.objects.get(objId)
+
+        print('action:', action, 'objId:', objId, 'obj:', obj)
 
         if not obj:
             continue
