@@ -56,6 +56,11 @@ class GameObject(object):
     def updateLocal(self,gamestate):
         pass
 
+    def reset(self):
+        self.x = self.spawnx
+        self.y = self.spawny
+        self.v = [0.0, 0.0]
+
     def draw(self, screen, tiles, gamestate):
         pass
 

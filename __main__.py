@@ -174,6 +174,9 @@ def controls():
             if e.key in KEYS_FIRE:
                 actions.append(('fire-release', ownId))
 
+            if e.key in KEYS_RESET:
+                actions.append(('reset', ownId))
+
             if e.key == pygame.K_F11:
                 global FPS
                 if FPS == 20:
@@ -311,6 +314,8 @@ def update():
             obj.rotate(0)
         elif action == 'stop-rotate-right':
             obj.rotate(0)
+        elif action == 'reset':
+            obj.reset()
         elif action == 'fire-press':
             obj.interact(gamestate)
         elif action == 'fire-release':

@@ -36,5 +36,6 @@ KEYS_FIRE = [pygame.K_LCTRL, pygame.K_SPACE]
 KEYS_THRUST = [pygame.K_w, pygame.K_UP]
 KEYS_ROTATE_LEFT = [pygame.K_a, pygame.K_LEFT]
 KEYS_ROTATE_RIGHT = [pygame.K_d, pygame.K_RIGHT]
+KEYS_RESET = [pygame.K_r]
 
 ROTATION_CHANGE = 5
