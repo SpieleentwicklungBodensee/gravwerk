@@ -128,7 +128,7 @@ def createPlayer(objId):
 
     # create ordinary player
     x, y = (0,0)
-    newPlayer = PlayerObject(SCR_W // 2, SCR_H // 2, tile='player'+str(playerColor), particleColor=particleColors[playerColor])
+    newPlayer = PlayerObject(SPAWN_X, SPAWN_Y, tile='player'+str(playerColor), particleColor=particleColors[playerColor])
     playerColor += 1
     playerColor %= 6
     gamestate.objects[objId] = newPlayer
@@ -327,7 +327,7 @@ def update():
 def init():
     global gamestate,playerColor,particleColors
 
-    player = PlayerObject(SCR_W // 2, SCR_H // 2, tile='player'+str(playerColor),particleColor = particleColors[playerColor])
+    player = PlayerObject(SPAWN_X, SPAWN_Y, tile='player'+str(playerColor),particleColor = particleColors[playerColor])
 
     playerColor +=1
 
