@@ -49,10 +49,10 @@ def particlesUpdate():
         e.xv*=0.99
         e.yv*=0.99
 
-def particlesRender(surface,cam_pos):
+def particlesRender(surface,camera):
     global psE
     for e in psE:
-        surface.set_at((round(e.x-cam_pos[0]),round(e.y-cam_pos[1])),e.c)
+        surface.set_at((round(e.x-camera[0]),round(e.y-camera[1])),e.c)
 
     # screen crumble effect
     if random.uniform(0,1)<0.1:
@@ -60,5 +60,4 @@ def particlesRender(surface,cam_pos):
         y=round(random.uniform(0,surface.get_size()[1]-1))
         c=surface.get_at((x,y))
         if c!=(0,0,0):
-            particlesCreate(x,y,0,0,0,c,1)
-
+            particlesCreate(x+camera[0],y+camera[1],0,0,0,c,1)
