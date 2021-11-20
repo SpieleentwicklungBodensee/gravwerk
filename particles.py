@@ -67,3 +67,11 @@ def particlesRender(surface):
     global psE
     for e in psE:
         surface.set_at((round(e.x),round(e.y)),e.c)
+
+    # screen crumble effect
+    if random.uniform(0,1)<0.1:
+        x=round(random.uniform(0,surface.get_size()[0]-1))
+        y=round(random.uniform(0,surface.get_size()[1]-1))
+        c=surface.get_at((x,y))
+        if c!=(0,0,0):
+            particlesCreate(x,y,0,0,0,c,1)
