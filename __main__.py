@@ -11,6 +11,7 @@ from globalconst import *
 from gameobjects import *
 from playerobject import *
 from gamestate import *
+from particles import *
 
 import network
 import sound
@@ -202,6 +203,8 @@ def render():
         rotated_rect = rotated_sprite.get_rect(center = (obj.x,obj.y))
         screen.blit(rotated_sprite, rotated_rect)
 
+    particlesRender(screen)
+
 def update():
     global actions, gamestate
 
@@ -225,6 +228,8 @@ def update():
                 sound.playSound(soundname)
         gamestate.soundQueue = set()
 
+    particlesUpdate()
+
     clientId = None
     for action, objId in actions:
 
@@ -239,6 +244,7 @@ def update():
             obj.move(1, None)
         elif action == 'move-up':
             obj.move(None, -1)
+            particlesCreate(obj.x,obj.y,1,(255,255,0),10)
         elif action == 'move-down':
             obj.move(None, 1)
         elif action == 'rotate-left':
@@ -272,6 +278,8 @@ def init():
 
     gamestate = GameState()
     gamestate.objects[ownId] = player
+
+    particlesInit()
 
 
 init()
