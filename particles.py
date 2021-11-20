@@ -26,20 +26,6 @@ def particlesInit():
     for i in range(PS_N):
         psE.append(Particle())
 
-def particlesCreate(x,y,speed,color,count):
-    global PS_N
-    global PS_I
-    global psE
-    for i in range(count):
-        PS_I+=1
-        if PS_I==PS_N:
-            PS_I=0
-        psE[PS_I].x=x
-        psE[PS_I].y=y
-        psE[PS_I].xv=random.uniform(-speed,speed)
-        psE[PS_I].yv=random.uniform(-speed,speed)
-        psE[PS_I].c=color
-
 def particlesCreate(x,y,xSpeed,ySpeed,rndSpeed,color,count):
     global PS_N
     global PS_I
