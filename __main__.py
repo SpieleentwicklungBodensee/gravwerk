@@ -5,6 +5,8 @@ import os
 import random
 import math
 
+
+
 from bitmapfont import BitmapFont
 
 from globalconst import *
@@ -73,31 +75,57 @@ tiles = {'#': pygame.image.load('gfx/wall-solid.png'),
          'player5': pygame.image.load('gfx/player5.png'),
          }
 
-level = ['#########################################',
-         '#4                                    3#',
-         '#                                      #',
-         '#                                   1###',
-         '#                                  1####',
-         '#                                 1#####',
-         '#2                                ######',
-         '#####################             ######',
-         '#################4               1######',
-         '##########4                  ###########',
-         '####4                        3##########',
-         '###4                          3##########',
-         '##4                            3########',
-         '#4                                    3#',
-         '#                                      #',
-         '#                                      #',
-         '#                    1#2               #',
-         '#                   1###2              #',
-         '#                 1######              #',
-         '#              ##########2             #',
-         '#2            1##############2        1#',
-         '########################################',
+level = ['###############################################################################',
+         '#4                                                                           3#',
+         '#                                                                             #',
+         '#                                                                             #',
+         '#                                                                             #',
+         '#                                                                             #',
+         '#                                                                             #',
+         '#                                                                             #',
+         '#                                                                             #',
+         '#                                                                          1###',
+         '#                                                                         1####',
+         '#                                                                        1#####',
+         '#2                                                                       ######',
+         '#####################                                                    ######',
+         '#################4                                                      1######',
+         '##########4                                                         ###########',
+         '####4                                                               3##########',
+         '###4                                                                3##########',
+         '##4                                                                   3########',
+         '#4                                                                           3#',
+         '#                                                                             #',
+         '#                                                                             #',
+         '#                                                                             #',
+         '#                                                                             #',
+         '#                                                                             #',
+         '#                                                                             #',
+         '#                                                                             #',
+         '#                                                                             #',
+         '#                                                                             #',
+         '#                                                                             #',
+         '#                              1#2                                            #',
+         '#                            1###2                                            #',
+         '#                            1######                                          #',
+         '#                            ##########2                                      #',
+         '#2                         1##############2                                  1#',
+         '###############################################################################',
          ]
 
 gamestate = GameState()
+
+
+def render_object(obj,position):
+    tileId = obj.getSprite()
+    if not tileId in tiles:
+        return
+    tile = tiles[tileId]
+    rotated_sprite = pygame.transform.rotate(tile, obj.rotation)
+    rotated_sprite = pygame.transform.scale(rotated_sprite, (round(rotated_sprite.get_size()[0] / 16), round(rotated_sprite.get_size()[1] / 16)))
+
+    rotated_rect = rotated_sprite.get_rect(center=(position[0], position[1]))
+    screen.blit(rotated_sprite, rotated_rect)
 
 
 def toggleFullscreen():
@@ -194,25 +222,27 @@ def render():
     if tick < 180:
         font.drawText(screen, 'GRAVWERK', 2, 2, fgcolor=(255,255,255))#, bgcolor=(0,0,0))
 
-    for y in range(LEV_H):
-        for x in range(LEV_W):
+    #get own position
+    camera_pos = None
+    for obj_id ,obj in gamestate.objects.items():
+        if obj_id == ownId:
+            camera_pos = (obj.x - SCR_W/2 + TILE_W/2, obj.y - SCR_H/2 + TILE_H/2)
+            break
+
+
+    #blit all the tiles onto the screen
+    for y in range(len(level)):
+        for x in range(len(level[y])):
             tileId = level[y][x]
 
             if tileId in tiles:
-                screen.blit(tiles[tileId], (x * TILE_W, y * TILE_H))
+                screen.blit(tiles[tileId], (x * TILE_W - camera_pos[0], y * TILE_H - camera_pos[1]))
 
-    for objId, obj in gamestate.objects.items():
-        tileId = obj.getSprite()
-        if not tileId in tiles:
-            continue
-        tile = tiles[tileId]
+    #blit objects on the screen
+    for wobjId, obj in gamestate.objects.items():
+        render_object(obj,(obj.x - camera_pos[0],obj.y - camera_pos[1]))
 
-        rotated_sprite = pygame.transform.rotate(tile, obj.rotation)
-        rotated_sprite = pygame.transform.scale(rotated_sprite, (round(rotated_sprite.get_size()[0]/16),round(rotated_sprite.get_size()[1]/16)))
-        rotated_rect = rotated_sprite.get_rect(center = (obj.x,obj.y))
-        screen.blit(rotated_sprite, rotated_rect)
-
-    particlesRender(screen)
+    particlesRender(screen,camera_pos)
 
 def update():
     global actions, gamestate
@@ -336,4 +366,7 @@ try:
         clock.tick(FPS)
 
 finally:
+    if net is not None:
+        net.stop()
+
     pygame.quit()
