@@ -14,6 +14,7 @@ from gameobjects import *
 from playerobject import *
 from gamestate import *
 from particles import *
+from graphics import *
 
 import network
 import sound
@@ -58,22 +59,8 @@ for i in range(pygame.joystick.get_count()):
 
 pygame.mouse.set_visible(False)
 
-font = BitmapFont('gfx/heimatfont.png', scr_w=SCR_W, scr_h=SCR_H, colors=[(255,255,255), (240,0,240)])
 
 
-tiles = {'#': pygame.image.load('gfx/wall-solid.png'),
-         '1': pygame.image.load('gfx/wall-ramp-lowerright.png'),
-         '2': pygame.image.load('gfx/wall-ramp-lowerleft.png'),
-         '3': pygame.image.load('gfx/wall-ramp-upperright.png'),
-         '4': pygame.image.load('gfx/wall-ramp-upperleft.png'),
-
-         'player0': pygame.image.load('gfx/player0.png'),
-         'player1': pygame.image.load('gfx/player1.png'),
-         'player2': pygame.image.load('gfx/player2.png'),
-         'player3': pygame.image.load('gfx/player3.png'),
-         'player4': pygame.image.load('gfx/player4.png'),
-         'player5': pygame.image.load('gfx/player5.png'),
-         }
 
 level = ['###############################################################################',
          '#4                                                                           3#',
@@ -116,27 +103,15 @@ level = ['######################################################################
 gamestate = GameState()
 
 
-def render_object(obj,position):
+def render_object(obj,camera_pos):
     tileId = obj.getSprite()
-    if not tileId in tiles:
+    if not tileId in getTiles():
         return
-    tile = tiles[tileId]
+    tile = getTiles()[tileId]
 
-    # no filtering
-    #rotated_sprite = pygame.transform.rotate(tile, obj.rotation)
-    #rotated_sprite = pygame.transform.scale(rotated_sprite, (round(rotated_sprite.get_size()[0] / 16), round(rotated_sprite.get_size()[1] / 16)))
+    rotated_sprite, rotated_rect = rotateSprite(obj)
 
-    # instant filtering
-    #rotated_sprite = pygame.transform.rotozoom(tile, obj.rotation, 1.0/16.0)
-
-    # multi-step filtering
-    rotated_sprite = pygame.transform.rotozoom(tile, obj.rotation, 0.5)
-    rotated_sprite = pygame.transform.rotozoom(rotated_sprite, 0, 0.5)
-    rotated_sprite = pygame.transform.rotozoom(rotated_sprite, 0, 0.5)
-    rotated_sprite = pygame.transform.rotozoom(rotated_sprite, 0, 0.5)
-
-    rotated_rect = rotated_sprite.get_rect(center=(position[0], position[1]))
-    screen.blit(rotated_sprite, rotated_rect)
+    screen.blit(rotated_sprite, (rotated_rect.x - camera_pos[0], rotated_rect.y - camera_pos[1]))
 
 
 def toggleFullscreen():
@@ -231,7 +206,7 @@ def controls():
 def render():
     screen.fill((0, 0, 0))
     if tick < 180:
-        font.drawText(screen, 'GRAVWERK', 2, 2, fgcolor=(255,255,255))#, bgcolor=(0,0,0))
+        getFont().drawText(screen, 'GRAVWERK', 2, 2, fgcolor=(255,255,255))#, bgcolor=(0,0,0))
 
     #get own position
     camera_pos = (0,0)
@@ -246,12 +221,16 @@ def render():
         for x in range(len(level[y])):
             tileId = level[y][x]
 
-            if tileId in tiles:
-                screen.blit(tiles[tileId], (x * TILE_W - camera_pos[0], y * TILE_H - camera_pos[1]))
+            if tileId in getTiles():
+                screen.blit(getTiles()[tileId], (x * TILE_W - camera_pos[0], y * TILE_H - camera_pos[1]))
 
     #blit objects on the screen
     for wobjId, obj in gamestate.objects.items():
-        render_object(obj,(obj.x - camera_pos[0],obj.y - camera_pos[1]))
+        render_object(obj,camera_pos)
+
+    for cx, cy in debugTiles:
+        screen.blit(getTiles()['debug'], (cx * TILE_W - camera_pos[0], cy * TILE_H - camera_pos[1]))
+    debugTiles.clear()
 
     particlesRender(screen,camera_pos)
 
@@ -348,10 +327,12 @@ def init():
 
     gamestate = GameState()
     gamestate.objects[ownId] = player
+    gamestate.level = level
 
     particlesInit()
 
 
+loadGraphics()
 init()
 
 tick = 0
