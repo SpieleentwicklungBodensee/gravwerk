@@ -59,13 +59,14 @@ font = BitmapFont('gfx/heimatfont.png', scr_w=SCR_W, scr_h=SCR_H, colors=[(255,2
 
 
 ownId = 0
-playerSprite = pygame.image.load('gfx/player.png')
 
 tiles = {'#': pygame.image.load('gfx/wall-solid.png'),
          '1': pygame.image.load('gfx/wall-ramp-lowerright.png'),
          '2': pygame.image.load('gfx/wall-ramp-lowerleft.png'),
          '3': pygame.image.load('gfx/wall-ramp-upperright.png'),
          '4': pygame.image.load('gfx/wall-ramp-upperleft.png'),
+
+         'player': pygame.image.load('gfx/player.png'),
          }
 
 level = ['#########################################',
@@ -187,13 +188,17 @@ def render():
 
     for y in range(LEV_H):
         for x in range(LEV_W):
-            tile = level[y][x]
+            tileId = level[y][x]
 
-            if tile in tiles:
-                screen.blit(tiles[tile], (x * TILE_W, y * TILE_H))
+            if tileId in tiles:
+                screen.blit(tiles[tileId], (x * TILE_W, y * TILE_H))
 
     for objId, obj in gamestate.objects.items():
-        rotated_sprite = pygame.transform.rotate(obj.getSprite(), obj.rotation)
+        tileId = obj.getSprite()
+        if not tileId in tiles:
+            continue
+        tile = tiles[tileId]
+        rotated_sprite = pygame.transform.rotate(tile, obj.rotation)
         rotated_rect = rotated_sprite.get_rect(center = (obj.x,obj.y))
         screen.blit(rotated_sprite, rotated_rect)
 
@@ -263,7 +268,7 @@ def update():
 def init():
     global gamestate
 
-    player = PlayerObject(SCR_W // 2, SCR_H // 2, playerSprite)
+    player = PlayerObject(SCR_W // 2, SCR_H // 2, tile='player')
 
     gamestate = GameState()
     gamestate.objects[ownId] = player
