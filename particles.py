@@ -45,9 +45,9 @@ def particlesUpdate():
     for e in psE:
         e.x=e.x+e.xv
         e.y=e.y+e.yv
-        e.yv+=0.1
-        e.xv*=0.98
-        e.yv*=0.98
+        e.yv+=0.02
+        e.xv*=0.99
+        e.yv*=0.99
 
 def particlesRender(surface):
     global psE
