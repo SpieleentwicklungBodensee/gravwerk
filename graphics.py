@@ -22,6 +22,9 @@ def loadGraphics():
             '2': pygame.image.load('gfx/wall-ramp-lowerleft.png'),
             '3': pygame.image.load('gfx/wall-ramp-upperright.png'),
             '4': pygame.image.load('gfx/wall-ramp-upperleft.png'),
+            '_': pygame.image.load('gfx/floor-center.png'),
+            'F': pygame.image.load('gfx/floor-border-left.png'),
+            'T': pygame.image.load('gfx/floor-border-right.png'),
 
             'player0': pygame.image.load('gfx/player0.png'),
             'player1': pygame.image.load('gfx/player1.png'),
