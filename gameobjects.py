@@ -53,6 +53,9 @@ class GameObject(object):
     def update(self, gamestate):
         pass
 
+    def updateLocal(self,gamestate):
+        pass
+
     def draw(self, screen, tiles, gamestate):
         pass
 
