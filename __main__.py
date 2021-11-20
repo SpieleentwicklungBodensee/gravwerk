@@ -206,7 +206,9 @@ def render():
         if not tileId in tiles:
             continue
         tile = tiles[tileId]
+
         rotated_sprite = pygame.transform.rotate(tile, obj.rotation)
+        rotated_sprite = pygame.transform.scale(rotated_sprite, (round(rotated_sprite.get_size()[0]/16),round(rotated_sprite.get_size()[1]/16)))
         rotated_rect = rotated_sprite.get_rect(center = (obj.x,obj.y))
         screen.blit(rotated_sprite, rotated_rect)
 
