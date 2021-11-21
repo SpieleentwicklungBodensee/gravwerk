@@ -17,7 +17,7 @@ from particles import *
 from graphics import *
 
 import network
-import sound
+from sound import *
 
 actions = []
 gamestate = None
@@ -326,6 +326,15 @@ def update():
 
 def init():
     global gamestate,playerColor,particleColors
+
+    #loadSound("boost-loop","snd/boost-loop.wav")
+    loadSound("boost-start","snd/boost-start.wav")
+    #loadSound("collect","snd/collect.wav")
+    loadSound("collision-25","snd/collision-25.wav")
+    loadSound("collision-50","snd/collision-50.wav")
+    loadSound("collision-75","snd/collision-75.wav")
+    loadSound("spawn","snd/spawn.wav")
+    loadSound("turn","snd/turn.wav")
 
     player = PlayerObject(SPAWN_X, SPAWN_Y, tile='player'+str(playerColor),particleColor = particleColors[playerColor])
 
