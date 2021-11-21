@@ -17,7 +17,7 @@ from particles import *
 from graphics import *
 
 import network
-from sound import *
+import sound
 
 actions = []
 gamestate = None
