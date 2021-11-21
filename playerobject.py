@@ -2,6 +2,7 @@ from globalconst import *
 from gameobjects import *
 from particles import *
 from graphics import *
+from sound import *
 
 import math
 import verlet
@@ -9,6 +10,8 @@ import verlet
 class PlayerObject(GameObject):
     def __init__(self, x, y, tile=None, particleColor = (255,128,0)):
         GameObject.__init__(self, x, y, tile)
+        playSound("spawn")
+        self.boostLoopTimer = 0
         self.particleColor = particleColor
 
     def getThrust(self, power =65.0):
@@ -44,6 +47,10 @@ class PlayerObject(GameObject):
     def updateLocal(self, gamestate):
         thrust = self.getThrust()
         if thrust[0] != 0 or thrust[1] != 0:
+            self.boostLoopTimer-=1.0/60.0
+            if self.boostLoopTimer<=0:
+                self.boostLoopTimer=0.099
+                playSound("boost-loop")
             particleDirMult = -3.0
             thrust[0] *= particleDirMult / FPS
             thrust[1] *= particleDirMult / FPS
