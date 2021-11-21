@@ -60,6 +60,7 @@ class GameObject(object):
         self.x = self.spawnx
         self.y = self.spawny
         self.v = [0.0, 0.0]
+        self.rotation = 0
 
     def draw(self, screen, tiles, gamestate):
         pass
